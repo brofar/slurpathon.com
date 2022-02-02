@@ -1,0 +1,12 @@
+## Turn on rewrite engine
+RewriteEngine on
+
+# Redirect path to index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ /r.php?id=$1 [NC,L,QSA]
+
+## Force HTTPS
+RewriteCond %{HTTPS} !on
+RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+

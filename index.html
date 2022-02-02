@@ -1,0 +1,110 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Slurpathon</title>
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/grid.css" rel="stylesheet">
+
+  </head>
+  <body>
+	<div id="snackbar">Update available. Click here to reload.</div>
+	<div class="grid-container">
+		<div class="Section-Donation">
+			<div id="charity-leaderboard">
+				<div class="charity-leaderboard__header">
+					<div id="logo"></div>
+					<h1><span id="display-name"></span></h1>
+					<div id="profile__progress-bar-raised"></div>
+					<div id="profile__progress-bar-goal"></div>
+					<div id="profile__progress-bar">
+						<div id="profile__progress-bar-progress"></div>
+					</div>
+				</div>
+				<strong class="top-donors-title">Recent Donors</strong>
+				<ol id="js-top-donors-list" class="charity-leaderboard__donor-list"></ol>
+
+				<div id="panel-container">
+					<a id="donate-button" class="panel__button panel__button--donate" value="Donate" href="https://slurpathon.com/donate"></a>
+				</div>
+			</div>
+		</div>
+		<div class="Section-Stream">
+			<div id="twitch-embed"></div>
+		</div>
+		<div class="Section-Twitter">
+			<a class="twitter-timeline" height="500" data-width="100%" data-dnt="true" data-theme="dark" href="https://twitter.com/slurpathon?ref_src=twsrc%5Etfw">Tweets by slurpathon</a> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+		</div>
+		<div class="Section-Schedule">
+			<iframe src="https://horaro.org/slurpathon2021/schedule" id="schedule" scrolling="yes" frameborder="0" marginheight="0px" marginwidth="0px" height="500" width="100%" allowfullscreen></iframe>
+		</div>
+	  </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+	<script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js" integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U" crossorigin="anonymous"></script>
+	
+	<script src="js/jquery.timeago.js"></script>
+    <script src="js/scripts.js"></script>
+	<script src="https://embed.twitch.tv/embed/v1.js"></script>
+	<script type="text/javascript">
+	window.onload = function() {
+		// TWITCH PLAYER
+		new Twitch.Embed("twitch-embed", {
+			width: "100%",
+			height: 480,
+			theme: "dark",
+			channel: "slurpeeninja",
+			parent: ["slurpathon.com"]
+		});
+			
+		// CHECK FOR NEWER VERSION OF THE PAGE.
+		var cachedVersion;
+		function CheckNewVersion() {
+			var serverVersion;
+
+			var jqxhr = $.ajax({
+				  method: "GET",
+				  url: "modify-check.php"
+				})
+			  .done(function(data) {
+			   serverVersion = data.trim();
+				if(cachedVersion) {
+					if (serverVersion>cachedVersion) {
+						console.log('[BROFAR]', '[PAGE-VERSION]', 'Server has latest version... reload your browser!');
+						document.getElementById('snackbar').classList.add('show');
+					} else {
+						console.log('[BROFAR]', '[PAGE-VERSION]', 'We have the most recent version!');
+					}
+				} else {
+					// Nothing in cache, set the cache to the returned version.
+					console.log('[BROFAR]', '[PAGE-VERSION]', `Nothing in cache. Set cache from ${cachedVersion} to ${serverVersion}`);
+					cachedVersion = serverVersion;
+				}
+			  })
+			  .fail(function(e) {
+				console.log( "error"+e );
+			  })
+			  .always(function() {
+				setTimeout(CheckNewVersion, 30000);//check every 5 sec only if complete.
+			  });
+		}
+
+		CheckNewVersion();
+		
+		// REFRESH BAR
+		document.getElementById('snackbar').addEventListener('click', function (event) {
+		  event.preventDefault();
+		  // Hard refresh the page without cache
+		  location.reload(true);
+		});
+	}
+	</script> 
+  </body>
+</html>
